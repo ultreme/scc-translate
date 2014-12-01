@@ -7,7 +7,10 @@ index-inline.html: index.html cryptage.js
 	html-inline index.html > index-inline.html
 
 scc-inline.html: scc.html cryptage.js
-	html-inline scc.html > scc-inline.html
+	cat scc.html | grep -v DELETE > scc-no-external.html
+	html-inline scc-no-external.html > scc-inline-tmp.html
+	cat scc-inline-tmp.html | sed 's/<!--AAA//g;s/AAA-->//g' > scc-inline.html
+	rm -f scc-no-external.html scc-inline-tmp.html
 
 scc2-inline.html: scc2.html cryptage.js
 	cat scc2.html | grep -v DELETE > scc2-no-external.html
