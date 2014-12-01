@@ -10206,7 +10206,82 @@ var yougo_french_attrs = {
 };
 var french_yougo_attrs = invert(yougo_french_attrs);
 
-var french_scrabble_attrs = {
+
+function translate_french_yougo(text) {
+    var newtext = '';
+    for (var i = 0; i < text.length; i++) {
+        var ch = text[i];
+        if (ch in yougo_french_attrs) {
+            newtext += yougo_french_attrs[ch];
+        } else {
+            newtext += ch;
+        }
+    }
+    return newtext;
+}
+function translate_yougo_french(text) {
+    var newtext = '';
+    for (var i = 0; i < text.length; i++) {
+        var ch = text[i];
+        if (ch in french_yougo_attrs) {
+            newtext += french_yougo_attrs[ch];
+        } else {
+            newtext += ch;
+        }
+    }
+    return newtext;
+}
+
+function cryptage() {
+    var from = 'french';
+    var to = 'yougo';
+    var func, text;
+    var cestparti = function() {
+        from = $('#langfrom input:checked').val();
+        to = $('#langto input:checked').val();
+        if (from == to) {
+            if (from == 'french') {
+                $('#langto2').attr('checked', 'checked');
+                to = 'yougo';
+            } else {
+                $('#langto1').attr('checked', 'checked');
+                to = 'french';
+            }
+        }
+        $('#langto input[disabled]').prop('disabled', false);
+        $('#langto input[value='+from+']').attr('disabled', 'disabled');
+
+
+        var text = $('textarea#source').val();
+        if (from != 'french') {
+            func = 'translate_' + from + '_french';
+            text = window[func](text);
+        }
+
+        if (to != 'french') {
+            func = 'translate_french_' + to;
+            text = window[func](text);
+        }
+        $('textarea#dest').val(text);
+    };
+    //$('#cryptage').click(cestparti);
+    $('button').click(cestparti);
+    $('input').click(cestparti).change(cestparti);
+    $('textarea').focus(cestparti).blur(cestparti);
+    $('#cryptage').text('CRYPTAGE').prop('disabled', false);
+    var latest = null;
+    function cron() {
+        var newone = $('#source').val() + $('#langto1').val();
+        if (latest != newone) {
+            cestparti();
+            latest = newone;
+        }
+    }
+    setInterval(cron, 500);
+}
+$(document).ready(function() {cryptage();});
+</script>
+    <script>var french_scrabble_attrs = {
     'a': 'JAMBON',
     'b': 'VOITURE',
     'c': 'CENDRILLER',
@@ -10235,31 +10310,6 @@ var french_scrabble_attrs = {
     'z': 'MONOPOLY'
 };
 var scrabble_french_attrs = invert(french_scrabble_attrs);
-
-function translate_french_yougo(text) {
-    var newtext = '';
-    for (var i = 0; i < text.length; i++) {
-        var ch = text[i];
-        if (ch in yougo_french_attrs) {
-            newtext += yougo_french_attrs[ch];
-        } else {
-            newtext += ch;
-        }
-    }
-    return newtext;
-}
-function translate_yougo_french(text) {
-    var newtext = '';
-    for (var i = 0; i < text.length; i++) {
-        var ch = text[i];
-        if (ch in french_yougo_attrs) {
-            newtext += french_yougo_attrs[ch];
-        } else {
-            newtext += ch;
-        }
-    }
-    return newtext;
-}
 
 function translate_french_scrabble(text) {
     var parts = text.split("");
@@ -10294,56 +10344,6 @@ function translate_french_verlant(text) {
 function translate_verlant_french(text) {
     return text.split("").reverse().join("");
 }
-
-function cryptage() {
-    var from = 'french';
-    var to = 'yougo';
-    var func, text;
-    var cestparti = function() {
-        from = $('#langfrom input:checked').val();
-        to = $('#langto input:checked').val();
-        if (from == to) {
-            if (from == 'french') {
-                $('#langto2').attr('checked', 'checked');
-                to = 'yougo';
-            } else {
-                $('#langto1').attr('checked', 'checked');
-                to = 'french';
-            }
-        }
-        $('#langto input[disabled]').prop('disabled', false);
-        $('#langto input[value='+from+']').attr('disabled', 'disabled');
-
-
-        var text = $('textarea#source').val();
-        console.log(text, from, to);
-        if (from != 'french') {
-            func = 'translate_' + from + '_french';
-            text = window[func](text);
-        }
-
-        if (to != 'french') {
-            func = 'translate_french_' + to;
-            text = window[func](text);
-        }
-        $('textarea#dest').val(text);
-    };
-    //$('#cryptage').click(cestparti);
-    $('button').click(cestparti);
-    $('input').click(cestparti).change(cestparti);
-    $('textarea').focus(cestparti).blur(cestparti);
-    $('#cryptage').text('CRYPTAGE').prop('disabled', false);
-    var latest = null;
-    function cron() {
-        var newone = $('#source').val() + $('#langto1').val();
-        if (latest != newone) {
-            cestparti();
-            latest = newone;
-        }
-    }
-    setInterval(cron, 500);
-}
-$(document).ready(function() {cryptage();});
 </script>
   </body>
 </html>

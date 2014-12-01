@@ -120,7 +120,6 @@ function cryptage() {
 
 
         var text = $('textarea#source').val();
-        console.log(text, from, to);
         if (from != 'french') {
             func = 'translate_' + from + '_french';
             text = window[func](text);
