@@ -166,21 +166,24 @@ function cryptage() {
     var from = 'french';
     var to = 'yougo';
     var func, text;
-    $('input[type="radio"]').change(function(a, b) {
+    var cestparti = function() {
         from = $('#langfrom input:checked').val();
         to = $('#langto input:checked').val();
         if (from == to) {
             if (from == 'french') {
                 $('#langto2').attr('checked', 'checked');
+                to = 'yougo';
             } else {
                 $('#langto1').attr('checked', 'checked');
+                to = 'french';
             }
         }
         $('#langto input[disabled]').prop('disabled', false);
         $('#langto input[value='+from+']').attr('disabled', 'disabled');
-    });
-    var cestparti = function() {
+
+
         var text = $('textarea#source').val();
+        console.log(text, from, to);
         if (from != 'french') {
             func = 'translate_' + from + '_french';
             text = window[func](text);
@@ -192,11 +195,19 @@ function cryptage() {
         }
         $('textarea#dest').val(text);
     };
-    $('#cryptage').click(cestparti);
-    $('textarea').blur(cestparti);
+    //$('#cryptage').click(cestparti);
     $('button').click(cestparti);
-    $('input').click(cestparti);
-    $('textarea').focus(cestparti);
+    $('input').click(cestparti).change(cestparti);
+    $('textarea').focus(cestparti).blur(cestparti);
     $('#cryptage').text('CRYPTAGE').prop('disabled', false);
+    var latest = null;
+    function cron() {
+        var newone = $('#source').val() + $('#langto1').val();
+        if (latest != newone) {
+            cestparti();
+            latest = newone;
+        }
+    }
+    setInterval(cron, 500);
 }
 $(document).ready(function() {cryptage();});
